@@ -2,24 +2,32 @@
 
 言語: [English](./README.md) | [简体中文](./README.zh-CN.md) | [日本語](./README.ja.md)
 
-このリポジトリは、PayGate の Node パブリッシャー + クライアント決済フローをローカルで再現するためのデモ専用リポジトリです。
+公式サイト: **https://paygate.deltab.ai**
 
-PayGate 本体コードはメインリポジトリにあります:
+このリポジトリは、PayGate の課金フローをローカルで再現するための公式デモです。
 
-- https://github.com/tomo-inc/paygate
+## SDK 導入方法（本番）
 
-このリポジトリに含まれるもの:
+公開済み npm パッケージ:
 
-- デモ実行スクリプト
-- デモ運用ドキュメント
-- 実行時ログ/環境ファイルの出力先
+```bash
+npm i @deltablab/express @deltablab/client-fetch ethers
+# または
+pnpm add @deltablab/express @deltablab/client-fetch ethers
+```
 
-## このリポジトリの目的
+導入モデル:
 
-以下のフルフローを短時間で再現します:
+1. サーバー側で `@deltablab/express`（または `@deltablab/hono` / `@deltablab/next`）を使って有料ルートを保護
+2. クライアント側で `@deltablab/client-fetch` を使って有料 API を呼び出し
+3. 実行時フローは `402 challenge -> 署名 -> 再試行 -> 200`
+
+## デモの目的
+
+以下のフルフローを再現します:
 
 1. クライアントが有料エンドポイントを呼ぶ
-2. サーバーが `402` チャレンジを返す
+2. サーバーが `402` challenge を返す
 3. クライアントが支払い証明に署名する
 4. クライアントが再試行する
 5. サーバーが `200` を返す
@@ -29,15 +37,6 @@ PayGate 本体コードはメインリポジトリにあります:
 - `GET /v1/weather`
 - `POST /v1/echo`
 
-## スコープ
-
-このリポジトリには PayGate Cloud/API/SDK の実装本体はありません。ローカルの `paygate` チェックアウトを呼び出して実行します。
-
-主要ファイル:
-
-- 実行スクリプト: `./run-node-demo.sh`
-- 実行生成物: `./.runtime/node-demo/`
-
 ## 前提条件
 
 - macOS または Linux
@@ -46,17 +45,9 @@ PayGate 本体コードはメインリポジトリにあります:
 - `curl`
 - `jq`
 - `lsof`
-- ローカルに `paygate` メインリポジトリを clone 済み
-
-## 推奨ディレクトリ構成
-
-```text
-<workspace>/
-  paygate/        # メインリポジトリ
-  paygate-demo/   # このリポジトリ
-```
-
-構成が異なる場合は `PAYGATE_REPO_DIR` を指定してください。
+- ローカルに PayGate ソースツリーがあり、次のディレクトリを含むこと:
+  - `cloud/api`
+  - `sdk/paygate-node`
 
 ## 初回セットアップ
 

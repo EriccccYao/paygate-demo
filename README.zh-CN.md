@@ -2,41 +2,40 @@
 
 语言切换: [English](./README.md) | [简体中文](./README.zh-CN.md) | [日本語](./README.ja.md)
 
-这是一个独立的 PayGate 本地演示仓库，用于快速跑通 Node 发布方 + 客户端的完整付费调用流程。
+官方入口：**https://paygate.deltab.ai**
 
-核心代码仍在主仓库：
+本仓库用于本地稳定复现 PayGate 付费调用全链路。
 
-- https://github.com/tomo-inc/paygate
+## SDK 接入方式（生产）
 
-本仓库只负责：
+当前可用 npm 包：
 
-- 演示脚本
-- 演示说明文档
-- 运行期日志与环境文件输出
+```bash
+npm i @deltablab/express @deltablab/client-fetch ethers
+# 或
+pnpm add @deltablab/express @deltablab/client-fetch ethers
+```
 
-## 这个仓库解决什么问题
+接入模型：
 
-它用于稳定复现以下链路：
+1. 服务端用 `@deltablab/express`（或 `@deltablab/hono` / `@deltablab/next`）保护付费路由
+2. 客户端用 `@deltablab/client-fetch` 发起付费请求
+3. 运行时流程：`402 challenge -> 签名 -> 重试 -> 200`
+
+## Demo 目标
+
+本 demo 用于稳定复现以下链路：
 
 1. 客户端访问受保护接口
-2. 服务端返回 `402` 挑战
+2. 服务端返回 `402` challenge
 3. 客户端签名支付证明
-4. 客户端重试请求
+4. 客户端重试
 5. 服务端返回 `200`
 
 默认演示接口：
 
 - `GET /v1/weather`
 - `POST /v1/echo`
-
-## 范围边界
-
-本仓库 **不包含** PayGate Cloud/API/SDK 实现本体；它会调你本地的 `paygate` 主仓库。
-
-关键文件：
-
-- 启动脚本: `./run-node-demo.sh`
-- 运行产物: `./.runtime/node-demo/`
 
 ## 前置条件
 
@@ -46,17 +45,9 @@
 - `curl`
 - `jq`
 - `lsof`
-- 本地已拉取 `paygate` 主仓库
-
-## 推荐目录结构
-
-```text
-<workspace>/
-  paygate/        # 主仓库
-  paygate-demo/   # 本仓库
-```
-
-如果你不是这个结构，需要设置 `PAYGATE_REPO_DIR`。
+- 本地有可运行的 PayGate 源码目录，且目录下包含：
+  - `cloud/api`
+  - `sdk/paygate-node`
 
 ## 一次性准备
 
